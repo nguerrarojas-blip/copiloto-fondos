@@ -1,0 +1,38 @@
+/*
+ * Design tokens — Copiloto de Postulación.
+ * Migrados desde los estilos inline de las referencias .dc.html (README §Design Tokens).
+ */
+:root {
+  /* Colores base */
+  --paper: #faf7f1;
+  --ink: #1b2a41;
+  --slate: #5b6472;
+  --rule: #ddd6c8;
+
+  /* Colores de agente / semántica */
+  --teal: #1f6f63; /* Redactor / éxito / CTA */
+  --amber: #b8863b; /* Matchmaker / Benchmark / advertencia */
+  --rose: #9c4a3c; /* QA / error duro */
+  --steel: #45566b; /* Intake */
+
+  /* Fondos secundarios */
+  --bg-secondary: #f3efe6;
+  --bg-success: #f4f8f6;
+  --bg-warning: #fdf8ef;
+  --bg-error: #fbf4f2;
+
+  /* Tipografía */
+  --font-serif: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --font-sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  /* Forma */
+  --radius-control: 8px;
+  --radius-card: 14px;
+  --radius-cell: 6px;
+
+  /* Sombras */
+  --shadow-card: 0 4px 20px rgba(27, 42, 65, 0.05);
+  --shadow-widget: 0 12px 32px rgba(27, 42, 65, 0.09);
+  --shadow-cta: 0 6px 16px rgba(31, 111, 99, 0.25);
+}

@@ -1,0 +1,53 @@
+# DigitalOcean App Platform — especificación de despliegue de la API del Copiloto.
+# El frontend YA vive en Vercel (https://copiloto-fondos.vercel.app) y la base de
+# datos YA vive en Neon — aquí solo se despliega la API (Node/Fastify).
+# Reemplaza <TU-USUARIO>/<TU-REPO> por tu repo de GitHub.
+# Los valores marcados PON_TU_... se completan en el panel de DigitalOcean (Secrets),
+# nunca aquí en el archivo.
+#
+# Puesta en marcha: DigitalOcean → Apps → Create App → conecta el repo, o usa
+#   doctl apps create --spec .do/app.yaml
+
+name: copiloto-api
+region: nyc
+
+# ─── API (Node/Fastify) ───
+services:
+  - name: api
+    github:
+      repo: <TU-USUARIO>/<TU-REPO>
+      branch: main
+      deploy_on_push: true
+    source_dir: /server
+    build_command: npm install && npm run build
+    run_command: npm start
+    http_port: 8080
+    instance_size_slug: basic-xxs
+    instance_count: 1
+    health_check:
+      http_path: /health
+    envs:
+      - key: DATABASE_URL
+        scope: RUN_TIME
+        type: SECRET
+        value: "PON_TU_CADENA_POOLED_DE_NEON"
+      - key: PORT
+        value: "8080"
+      - key: CORS_ORIGIN
+        value: "https://copiloto-fondos.vercel.app"
+      - key: APP_BASE_URL
+        value: "https://copiloto-fondos.vercel.app"
+      - key: EMAIL_FROM
+        value: "Marcela de Copiloto <marcela@tudominio.cl>"
+      - key: RESEND_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: "PON_TU_LLAVE_EN_EL_PANEL"
+      - key: ANTHROPIC_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: "" # se completa en la fase de IA
+      - key: TOKEN_SECRET
+        scope: RUN_TIME
+        type: SECRET
+        value: "PON_UN_VALOR_ALEATORIO_LARGO"

@@ -1,0 +1,12 @@
+node_modules
+dist
+dist_verify
+dist_verify2
+dist-ssr
+*.local
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+
+.vercel
+.env*
