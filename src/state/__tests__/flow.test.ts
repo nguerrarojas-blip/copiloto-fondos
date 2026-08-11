@@ -34,19 +34,20 @@ describe('Recorrido del postulante — diagnóstico guiado', () => {
     expect(s2.accessLinkSent).toBe(true);
   });
 
-  it('etapa consolidada → sin match (no empuja a un fondo equivocado)', () => {
+  it('etapa consolidada → convocatoria cerrada, deriva a Semilla Expande (no empuja a un fondo equivocado)', () => {
     const s = run([{ type: 'DIAG_NO' }, { type: 'DIAG_PICK_TIPO', value: 'juridica' }, { type: 'DIAG_PICK_ETAPA', value: 'consolidada' }]);
-    expect(s.diagStep).toBe('nomatch');
+    expect(s.diagStep).toBe('cerrado');
+    expect(s.diagManualMatchId).toBe('semilla-expande');
   });
 
-  it('sector científico → fuera del piloto, deriva a Startup Ciencia', () => {
+  it('sector científico → convocatoria cerrada, deriva a Startup Ciencia', () => {
     const s = run([
       { type: 'DIAG_NO' },
       { type: 'DIAG_PICK_TIPO', value: 'juridica' },
       { type: 'DIAG_PICK_ETAPA', value: 'idea' },
       { type: 'DIAG_PICK_SECTOR', value: 'cientifica' },
     ]);
-    expect(s.diagStep).toBe('fueraPiloto');
+    expect(s.diagStep).toBe('cerrado');
     expect(s.diagManualMatchId).toBe('startup-ciencia');
   });
 });

@@ -5,7 +5,7 @@
  * y secciones deben respetarse tal cual.
  */
 
-export type FondoId = 'semilla-inicia' | 'fondo-crece';
+export type FondoId = 'semilla-inicia' | 'fondo-crece' | 'capital-abeja';
 
 export type SectionKind =
   | 'narrativa'
@@ -98,6 +98,39 @@ export const FUNDS: Record<FondoId, Fund> = {
       { key: 'antecedentes', title: 'Antecedentes generales', kind: 'identidad' },
       { key: 'admisibilidad', title: 'Admisibilidad', kind: 'admisibilidad' },
       { key: 'mejora', title: 'Mejora productiva', kind: 'narrativa', qs: ['c1', 'q3', 'q5'] },
+      {
+        key: 'inversion',
+        title: 'Plan de inversión',
+        kind: 'narrativa+presupuesto',
+        qs: ['q10'],
+      },
+      { key: 'equipo', title: 'Equipo', kind: 'equipo' },
+      { key: 'datos', title: 'Datos estadísticos', kind: 'datos' },
+    ],
+  },
+  'capital-abeja': {
+    id: 'capital-abeja',
+    nombre: 'Capital Abeja Emprende',
+    institucion: 'Sercotec',
+    tope: 3500000,
+    topeMujeres: 3500000,
+    dias: 8,
+    cofiMin: 10,
+    adminMax: 5,
+    motivo:
+      'Emprendimiento liderado por mujeres en etapa temprana: Capital Abeja está diseñado exactamente para ese perfil y exige menos cofinanciamiento.',
+    categorias: [
+      'Activos fijos',
+      'Habilitación de infraestructura',
+      'Marketing y comercialización',
+      'Asesorías y capacitación',
+      'Gastos de administración',
+    ],
+    sections: [
+      { key: 'negocio', title: 'Descripción del emprendimiento', kind: 'narrativa', qs: ['q1', 'q2'] },
+      { key: 'antecedentes', title: 'Antecedentes generales', kind: 'identidad' },
+      { key: 'admisibilidad', title: 'Admisibilidad', kind: 'admisibilidad' },
+      { key: 'proyecto', title: 'Proyecto a financiar', kind: 'narrativa', qs: ['c1', 'q3'] },
       {
         key: 'inversion',
         title: 'Plan de inversión',

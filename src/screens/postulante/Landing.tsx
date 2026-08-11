@@ -9,6 +9,7 @@ import { Card, Button, Pill } from '../../ui/primitives';
 import { FundsCatalog } from './FundsCatalog';
 
 const EMAIL_RE = /.+@.+\..+/;
+const CORPUS_RESUMEN = `Tenemos ${CORPUS.length} postulaciones adjudicadas de referencia. Monto promedio ${fmt(AVG_MONTO)}, con ${AVG_COFI}% de cofinanciamiento propio.`;
 
 export function Landing() {
   const { state, dispatch } = useApp();
@@ -60,7 +61,7 @@ export function Landing() {
                 Piloto gratuito · 20 cupos
               </span>
               <span style={{ fontSize: 13, background: '#fff', border: '1px solid var(--rule)', borderRadius: 999, padding: '6px 12px' }}>
-                Semilla Inicia y Fondo Crece
+                Semilla Inicia, Fondo Crece y Capital Abeja
               </span>
             </div>
             <div style={{ marginTop: 20 }}>
@@ -82,10 +83,7 @@ export function Landing() {
 
         <section style={{ marginTop: 56 }}>
           <h2 style={{ fontSize: 22, margin: '0 0 4px' }}>Proyectos adjudicados de referencia</h2>
-          <p style={{ color: 'var(--slate)', fontSize: 14, marginBottom: 16 }}>
-            Tenemos {CORPUS.length} postulaciones adjudicadas de referencia. Monto promedio {fmt(AVG_MONTO)}, con {AVG_COFI}%
-            de cofinanciamiento propio. Siempre anónimas.
-          </p>
+          <p style={{ color: 'var(--slate)', fontSize: 14, marginBottom: 16 }}>{CORPUS_RESUMEN} Siempre anónimas.</p>
           <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
             {CORPUS.map((c) => (
               <Card key={c.nombre}>
@@ -155,11 +153,11 @@ function Diagnostico() {
         <input
           value={s.diagFondoManual}
           onChange={(e) => dispatch({ type: 'DIAG_SET_MANUAL', value: e.target.value })}
-          placeholder="Buscar en el catálogo"
+          placeholder="ej. semilla inicia"
           style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--rule)', marginTop: 8 }}
         />
         <Button variant="teal" disabled={!s.diagFondoManual.trim()} onClick={() => dispatch({ type: 'DIAG_BUSCAR' })} style={{ marginTop: 10 }}>
-          Buscar
+          Buscar en el catálogo
         </Button>
         {back}
       </div>
@@ -173,15 +171,19 @@ function Diagnostico() {
           <>
             <h3 style={{ fontSize: 18 }}>¿Te refieres a {m.nombre}?</h3>
             <p style={{ fontSize: 13, color: 'var(--slate)' }}>{m.institucion}</p>
-            <Button variant="teal" onClick={() => dispatch({ type: 'DIAG_CONFIRMAR' })} style={{ marginTop: 8 }}>Sí, es ese</Button>{' '}
+            <Button variant="teal" onClick={() => dispatch({ type: 'DIAG_CONFIRMAR' })} style={{ marginTop: 8 }}>Sí, ese es</Button>{' '}
             <Button onClick={() => dispatch({ type: 'DIAG_CORREGIR' })}>No, corregir</Button>
           </>
         ) : (
           <>
-            <h3 style={{ fontSize: 18 }}>No lo encontramos en el catálogo</h3>
-            <p style={{ fontSize: 13, color: 'var(--slate)' }}>Podemos ayudarte a elegir con unas preguntas.</p>
-            <Button variant="teal" onClick={() => dispatch({ type: 'DIAG_CONFIRMAR' })} style={{ marginTop: 8 }}>Ir al flujo guiado</Button>{' '}
-            <Button onClick={() => dispatch({ type: 'DIAG_CORREGIR' })}>Corregir</Button>
+            <p style={{ fontSize: 16, lineHeight: 1.55 }}>
+              No encontramos "{s.diagFondoManual}" en nuestro catálogo. Puede ser que se llame distinto o que no lo cubramos
+              todavía.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <Opt label="Corregir el nombre" onClick={() => dispatch({ type: 'DIAG_CORREGIR' })} />
+              <Opt label="Mejor ayúdenme a encontrarlo" onClick={() => dispatch({ type: 'DIAG_NO' })} />
+            </div>
           </>
         )}
       </div>
@@ -191,7 +193,7 @@ function Diagnostico() {
   if (s.diagStep === 'tipo')
     return (
       <div style={{ marginTop: 10 }}>
-        <h3 style={{ fontSize: 18 }}>¿Quién postula?</h3>
+        <h3 style={{ fontSize: 18 }}>¿Cómo postulas?</h3>
         <Opt label="Persona natural" onClick={() => dispatch({ type: 'DIAG_PICK_TIPO', value: 'natural' })} />
         <Opt label="Empresa (persona jurídica)" onClick={() => dispatch({ type: 'DIAG_PICK_TIPO', value: 'juridica' })} />
         {back}
@@ -212,7 +214,7 @@ function Diagnostico() {
   if (s.diagStep === 'sector')
     return (
       <div style={{ marginTop: 10 }}>
-        <h3 style={{ fontSize: 18 }}>¿De qué sector?</h3>
+        <h3 style={{ fontSize: 18 }}>¿Cuál describe mejor tu sector?</h3>
         <Opt label="Base científico-tecnológica" onClick={() => dispatch({ type: 'DIAG_PICK_SECTOR', value: 'cientifica' })} />
         <Opt label="Tecnología o software" onClick={() => dispatch({ type: 'DIAG_PICK_SECTOR', value: 'tech' })} />
         <Opt label="Comercio, servicios, manufactura u otro" onClick={() => dispatch({ type: 'DIAG_PICK_SECTOR', value: 'otro' })} />
@@ -223,7 +225,7 @@ function Diagnostico() {
   if (s.diagStep === 'mujeres')
     return (
       <div style={{ marginTop: 10 }}>
-        <h3 style={{ fontSize: 18 }}>¿El proyecto es liderado por una mujer?</h3>
+        <h3 style={{ fontSize: 18 }}>¿Es un emprendimiento liderado por mujeres?</h3>
         <p style={{ fontSize: 12, color: 'var(--slate)' }}>En Semilla Inicia sube el tope de $15M a $17M.</p>
         <Opt label="Sí" onClick={() => dispatch({ type: 'DIAG_PICK_MUJERES', value: true })} />
         <Opt label="No" onClick={() => dispatch({ type: 'DIAG_PICK_MUJERES', value: false })} />
@@ -238,49 +240,56 @@ function Diagnostico() {
         <Pill color="var(--teal)" bg="var(--bg-success)">Tenemos un match</Pill>
         <h3 style={{ fontSize: 18, marginTop: 8 }}>{fund.nombre}</h3>
         <p style={{ fontSize: 13, color: 'var(--slate)' }}>{fund.motivo}</p>
-        <p className="mono" style={{ fontSize: 12, marginTop: 6 }}>
+        <p className="mono" style={{ fontSize: 12, marginTop: 6, marginBottom: 16 }}>
           Tope {fmt(s.mujeres ? fund.topeMujeres : fund.tope)} · cierra en {fund.dias} días
         </p>
+        <div style={{ borderLeft: '3px solid var(--amber)', padding: '8px 0 8px 12px' }}>
+          <div className="mono" style={{ fontSize: 10.5, color: 'var(--amber)', textTransform: 'uppercase', marginBottom: 4 }}>
+            Agente Benchmark
+          </div>
+          <div style={{ fontSize: 12.5, color: 'var(--slate)', lineHeight: 1.55 }}>{CORPUS_RESUMEN}</div>
+        </div>
       </div>
     );
   }
 
-  if (s.diagStep === 'fueraPiloto') {
-    const f = CATALOGO.find((c) => c.id === s.diagManualMatchId);
-    return <FueraPiloto nombre={f ? `${f.nombre} (${f.institucion})` : 'ese fondo'} />;
-  }
-
-  if (s.diagStep === 'nomatch') return <NoMatch />;
+  if (s.diagStep === 'cerrado') return <Cerrado />;
 
   return null;
 }
 
-function FueraPiloto({ nombre }: { nombre: string }) {
+/** Convocatoria cerrada: el fondo que le calza al usuario no está abierto hoy.
+ * Se le nombra el fondo, cuándo se espera que abra, qué está abierto por si le
+ * sirve, y se captura el correo — nunca se lo empuja a un fondo equivocado. */
+function Cerrado() {
   const { state, dispatch } = useApp();
-  return (
-    <div style={{ marginTop: 10 }}>
-      <Pill color="var(--amber)" bg="var(--bg-warning)">Fondo fuera del piloto</Pill>
-      <h3 style={{ fontSize: 18, marginTop: 8 }}>El fondo correcto para ti es {nombre}</h3>
-      <p style={{ fontSize: 13, color: 'var(--slate)' }}>
-        Todavía no lo cubrimos en el piloto, pero no queremos empujarte a un fondo equivocado. Déjanos tu correo y te
-        avisamos cuando lo incorporemos.
-      </p>
-      <EmailCapture done={state.diagEmailSent} value={state.diagEmail} onChange={(v) => dispatch({ type: 'DIAG_SET_EMAIL', value: v })} onSubmit={() => dispatch({ type: 'DIAG_SUBMIT_EMAIL' })} />
-    </div>
-  );
-}
+  const f = CATALOGO.find((c) => c.id === state.diagManualMatchId);
+  const nombre = f ? `${f.nombre} (${f.institucion})` : 'ese fondo';
+  const apertura = f?.apertura || 'la próxima convocatoria aún no tiene fecha publicada';
+  const abiertos = CATALOGO.filter((c) => c.abierto).map((c) => c.nombre);
+  const alternativaAbierta = abiertos.length
+    ? `Hoy están abiertas ${abiertos.slice(0, -1).join(', ')} y ${abiertos[abiertos.length - 1]}, pero por tu perfil no son las que te convienen.`
+    : '';
 
-function NoMatch() {
-  const { state, dispatch } = useApp();
   return (
     <div style={{ marginTop: 10 }}>
-      <Pill color="var(--slate)" bg="var(--bg-secondary)">Sin match en el piloto</Pill>
-      <h3 style={{ fontSize: 18, marginTop: 8 }}>Con facturación consolidada, ninguno de estos dos fondos te calza</h3>
-      <p style={{ fontSize: 13, color: 'var(--slate)' }}>
-        Preferimos decírtelo derecho antes que venderte algo que no aplica. Déjanos tu correo y te avisamos cuando abramos
-        un instrumento para tu etapa.
+      <Pill color="var(--amber)" bg="var(--bg-warning)">Convocatoria cerrada</Pill>
+      <p style={{ fontSize: 16, lineHeight: 1.55, margin: '8px 0 12px' }}>
+        Por tu perfil te calza <strong>{nombre}</strong>, pero {apertura}.
       </p>
-      <EmailCapture done={state.diagEmailSent} value={state.diagEmail} onChange={(v) => dispatch({ type: 'DIAG_SET_EMAIL', value: v })} onSubmit={() => dispatch({ type: 'DIAG_SUBMIT_EMAIL' })} />
+      <p style={{ fontSize: 13.5, color: 'var(--slate)', lineHeight: 1.6, marginBottom: 14 }}>
+        {alternativaAbierta} Guardamos tu diagnóstico y te escribimos el día que abra, para que solo continúes desde donde
+        quedaste.
+      </p>
+      <EmailCapture
+        done={state.diagEmailSent}
+        value={state.diagEmail}
+        onChange={(v) => dispatch({ type: 'DIAG_SET_EMAIL', value: v })}
+        onSubmit={() => dispatch({ type: 'DIAG_SUBMIT_EMAIL' })}
+      />
+      <button onClick={() => dispatch({ type: 'DIAG_BACK' })} style={{ background: 'none', border: 'none', color: 'var(--slate)', fontSize: 12, marginTop: 10 }}>
+        ← atrás
+      </button>
     </div>
   );
 }

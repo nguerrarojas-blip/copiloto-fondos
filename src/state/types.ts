@@ -16,8 +16,7 @@ export type DiagStep =
   | 'sector'
   | 'mujeres'
   | 'result'
-  | 'nomatch'
-  | 'fueraPiloto';
+  | 'cerrado';
 
 export type Block = 'identidad' | 'narrativa' | 'presupuesto' | 'datos' | 'verificacion';
 

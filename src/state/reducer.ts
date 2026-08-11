@@ -120,16 +120,16 @@ export function reducer(s: AppState, a: Action): AppState {
     case 'DIAG_CONFIRMAR': {
       const m = findFondo(s.diagFondoManual);
       if (!m) return { ...s, diagStep: 'tipo' };
-      if (m.id === 'semilla-inicia' || m.id === 'fondo-crece')
-        return { ...s, fondoId: m.id as FondoId, diagManualMatchId: m.id, diagStep: 'mujeres' };
-      return { ...s, diagManualMatchId: m.id, diagStep: 'fueraPiloto' };
+      if (m.abierto) return { ...s, fondoId: m.id as FondoId, diagManualMatchId: m.id, diagStep: 'mujeres' };
+      return { ...s, diagManualMatchId: m.id, diagStep: 'cerrado' };
     }
     case 'DIAG_CORREGIR':
       return { ...s, diagStep: 'manual', diagFondoManual: '' };
     case 'DIAG_PICK_TIPO':
       return { ...s, tipo: a.value, diagStep: 'etapa' };
     case 'DIAG_PICK_ETAPA':
-      if (a.value === 'consolidada') return { ...s, etapa: a.value, diagStep: 'nomatch' };
+      if (a.value === 'consolidada')
+        return { ...s, etapa: a.value, diagStep: 'cerrado', diagManualMatchId: 'semilla-expande' };
       return {
         ...s,
         etapa: a.value,
@@ -138,7 +138,7 @@ export function reducer(s: AppState, a: Action): AppState {
       };
     case 'DIAG_PICK_SECTOR':
       if (a.value === 'cientifica')
-        return { ...s, sector: a.value, diagStep: 'fueraPiloto', diagManualMatchId: 'startup-ciencia' };
+        return { ...s, sector: a.value, diagStep: 'cerrado', diagManualMatchId: 'startup-ciencia' };
       return { ...s, sector: a.value, diagStep: 'mujeres' };
     case 'DIAG_PICK_MUJERES':
       return { ...s, mujeres: a.value, diagStep: 'result' };
@@ -147,7 +147,7 @@ export function reducer(s: AppState, a: Action): AppState {
       const cur = s.diagStep;
       if (cur === 'manual') return { ...s, diagStep: 'ask' };
       if (cur === 'manualConfirm') return { ...s, diagStep: 'manual' };
-      if (cur === 'fueraPiloto' || cur === 'nomatch') return { ...s, diagStep: 'etapa' };
+      if (cur === 'cerrado') return { ...s, diagStep: 'etapa' };
       const i = order.indexOf(cur);
       return { ...s, diagStep: (i > 0 ? order[i - 1] : 'ask') as AppState['diagStep'] };
     }

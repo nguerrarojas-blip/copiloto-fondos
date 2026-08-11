@@ -1,42 +1,45 @@
-/** Catálogo de fondos: los dos del piloto con detalle real (tope, cierre), y el
- * resto del catálogo reconocido por el Matchmaker, marcado como fuera del
- * piloto por ahora. Nada de estados o plazos inventados para los que no están
- * en el piloto — no tenemos esos datos todavía. */
-import { CATALOGO, PILOTO_FONDOS } from '../../data/catalogo';
-import { FUNDS } from '../../data/funds';
+/** Catálogo de fondos: los tres abiertos con detalle real (tope, cierre), y el
+ * resto reconocido por el Matchmaker pero con su convocatoria cerrada — se
+ * muestra cuándo se espera que abra, nunca un estado inventado. */
+import { CATALOGO } from '../../data/catalogo';
+import { FUNDS, type FondoId } from '../../data/funds';
 import { fmt } from '../../domain/format';
 import { Card, Pill } from '../../ui/primitives';
 
+function hasFullRules(id: string): id is FondoId {
+  return id in FUNDS;
+}
+
 export function FundsCatalog() {
   return (
-    <section style={{ marginTop: 56 }}>
+    <section id="fondos" style={{ marginTop: 56, scrollMarginTop: 80 }}>
       <h2 style={{ fontSize: 22, margin: '0 0 4px' }}>Fondos que cubrimos</h2>
       <p style={{ color: 'var(--slate)', fontSize: 14, marginBottom: 16 }}>
-        El piloto arma el expediente completo para dos instrumentos. Reconocemos el resto del catálogo en el diagnóstico y te
-        avisamos cuando los incorporemos.
+        La restricción real no es qué fondos conocemos, sino si la convocatoria está abierta. El piloto arma el expediente
+        completo para los tres instrumentos abiertos; el resto lo reconocemos en el diagnóstico y avisamos cuando abran.
       </p>
       <div style={{ display: 'grid', gap: 14, gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))' }}>
         {CATALOGO.map((c) => {
-          const enPiloto = (PILOTO_FONDOS as readonly string[]).includes(c.id);
-          const fund = enPiloto ? FUNDS[c.id as keyof typeof FUNDS] : null;
+          const fund = hasFullRules(c.id) ? FUNDS[c.id] : null;
           return (
-            <Card key={c.id} accent={enPiloto ? 'var(--teal)' : undefined} style={{ opacity: enPiloto ? 1 : 0.85 }}>
+            <Card key={c.id} accent={c.abierto ? 'var(--teal)' : undefined} style={{ opacity: c.abierto ? 1 : 0.85 }}>
               <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', gap: 8 }}>
                 <div style={{ fontFamily: 'var(--font-serif)', fontSize: 18 }}>{c.nombre}</div>
-                {enPiloto ? (
-                  <Pill color="var(--teal)" bg="var(--bg-success)">En el piloto</Pill>
+                {c.abierto ? (
+                  <Pill color="var(--teal)" bg="var(--bg-success)">Abierto</Pill>
                 ) : (
-                  <Pill color="var(--slate)" bg="var(--bg-secondary)">Fuera del piloto</Pill>
+                  <Pill color="var(--slate)" bg="var(--bg-secondary)">Cerrado</Pill>
                 )}
               </div>
               <div className="mono" style={{ fontSize: 12, color: 'var(--slate)', marginTop: 4 }}>{c.institucion}</div>
-              {fund ? (
+              {c.abierto && fund ? (
                 <div className="mono" style={{ fontSize: 12, color: 'var(--ink)', marginTop: 8 }}>
-                  Tope {fmt(fund.tope)}{fund.topeMujeres !== fund.tope ? ` (${fmt(fund.topeMujeres)} mujeres)` : ''} · cierra en {fund.dias} días
+                  Tope {fmt(fund.tope)}{fund.topeMujeres !== fund.tope ? ` (${fmt(fund.topeMujeres)} mujeres)` : ''} · {c.cierre}
                 </div>
               ) : (
                 <p style={{ fontSize: 13, color: 'var(--slate)', marginTop: 8 }}>
-                  Lo reconocemos en el diagnóstico. Déjanos tu correo ahí y te avisamos cuando lo sumemos al piloto.
+                  {c.apertura ? c.apertura.charAt(0).toUpperCase() + c.apertura.slice(1) : 'Sin fecha de apertura publicada.'} Déjanos
+                  tu correo en el diagnóstico y te avisamos.
                 </p>
               )}
             </Card>

@@ -1,8 +1,9 @@
 /**
- * Raíz de la aplicación. `/` es el producto real de cara al postulante — sin banner
- * de demo, sin selector de superficies. Las piezas internas (panel del formulador,
- * expediente de referencia, correos, legal) viven en rutas separadas bajo
- * `/interno/*`, no enlazadas desde el producto público.
+ * Raíz de la aplicación. `/` es el sitio público de marketing (Landing Publica);
+ * sus CTA llevan a `/app`, donde vive el producto real del postulante — sin
+ * banner de demo, sin selector de superficies. Las piezas internas (panel del
+ * formulador, expediente de referencia, correos, legal) viven en rutas
+ * separadas bajo `/interno/*`, no enlazadas desde el producto público.
  *
  * Nota de seguridad: estas rutas internas todavía no exigen sesión real del lado
  * del frontend (el backend sí valida `x-formulador-email` en sus propias rutas,
@@ -12,6 +13,7 @@
 import { useEffect, useState } from 'react';
 import { AppProvider } from './state/AppContext';
 import { PostulanteApp } from './screens/postulante/PostulanteApp';
+import { LandingPublica } from './screens/marketing/LandingPublica';
 import { PanelFormulador } from './screens/formulador/PanelFormulador';
 import { ExpedienteDoc } from './screens/documento/ExpedienteDoc';
 import { Correos } from './screens/correos/Correos';
@@ -73,9 +75,13 @@ export function App() {
     );
   }
 
-  return (
-    <AppProvider>
-      <PostulanteApp />
-    </AppProvider>
-  );
+  if (path === '/app' || path === '/app/') {
+    return (
+      <AppProvider>
+        <PostulanteApp />
+      </AppProvider>
+    );
+  }
+
+  return <LandingPublica />;
 }
