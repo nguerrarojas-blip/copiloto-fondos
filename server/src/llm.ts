@@ -19,6 +19,9 @@ export interface RedactorInput {
   raw: string; // relato del postulante
   field: string; // campo del formulario (p. ej. "Atributos diferenciadores")
   fondo: string; // nombre del instrumento
+  /** Instrucción oficial de las bases para este campo, si ya fue verificada
+   * (ver src/data/bibliografia.ts). Nunca es un dato del proyecto. */
+  officialContext?: string;
 }
 
 const SYSTEM = [
@@ -29,14 +32,18 @@ const SYSTEM = [
   '- No exageres ni agregues promesas. Si el relato es vago, mantén la vaguedad; no la rellenes.',
   '- Español de Chile, tercera persona, sin jerga de marketing.',
   '- Devuelve solo el párrafo, sin encabezados ni comillas.',
+  '- Si se entrega la instrucción oficial de las bases para este campo, alinea el énfasis y el orden del párrafo a lo que esa instrucción pide explícitamente — sin agregar ningún hecho que no venga del relato del postulante.',
 ].join('\n');
 
 /** Genera el párrafo formal. Lanza si el proveedor falla (el caller decide el fallback de UI). */
-export async function formalizeWithLLM({ raw, field, fondo }: RedactorInput): Promise<string> {
+export async function formalizeWithLLM({ raw, field, fondo, officialContext }: RedactorInput): Promise<string> {
   if (!client) {
     // Sin llave: fallback determinista (misma plantilla del prototipo).
     return formalize(raw);
   }
+  const contextoOficial = officialContext
+    ? `\n\nInstrucción oficial de las bases para este campo:\n"""\n${officialContext}\n"""`
+    : '';
   const msg = await client.messages.create({
     model: env.ANTHROPIC_MODEL,
     max_tokens: 800,
@@ -44,7 +51,7 @@ export async function formalizeWithLLM({ raw, field, fondo }: RedactorInput): Pr
     messages: [
       {
         role: 'user',
-        content: `Instrumento: ${fondo}\nCampo del formulario: ${field}\n\nRelato del postulante:\n"""\n${raw}\n"""\n\nReescríbelo como el párrafo formal para ese campo.`,
+        content: `Instrumento: ${fondo}\nCampo del formulario: ${field}${contextoOficial}\n\nRelato del postulante:\n"""\n${raw}\n"""\n\nReescríbelo como el párrafo formal para ese campo.`,
       },
     ],
   });

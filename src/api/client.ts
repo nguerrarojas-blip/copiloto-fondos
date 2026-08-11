@@ -71,7 +71,7 @@ export const api = {
   savePostulacion(state: AppState) {
     return req<{ derived: Derived }>('/api/postulacion', { method: 'PUT', body: JSON.stringify({ state }) });
   },
-  redactor(input: { raw: string; field: string; fondo: string }) {
+  redactor(input: { raw: string; field: string; fondo: string; fondoId: string; qid: string }) {
     return req<{ formal: string }>('/api/redactor', { method: 'POST', body: JSON.stringify(input) });
   },
 };

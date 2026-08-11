@@ -4,6 +4,7 @@
 import { useApp } from '../../../state/AppContext';
 import { FUNDS, narrativeIds } from '../../../data/funds';
 import { QUESTIONS } from '../../../data/questions';
+import { getOfficialContext } from '../../../data/bibliografia';
 import { api, apiEnabled } from '../../../api/client';
 import { Card, Button, TextArea, Pill, AgentFinding } from '../../../ui/primitives';
 
@@ -26,6 +27,7 @@ export function NarrativaBlock() {
   }
 
   const q = QUESTIONS[pendingId];
+  const officialContext = getOfficialContext(state.fondoId, pendingId);
   const sec = fund.sections.find((x) => x.qs && x.qs.includes(pendingId))!;
   const secLabel = `0${fund.sections.indexOf(sec) + 1} · ${sec.title}`;
   const m = state.redactorMode;
@@ -34,9 +36,15 @@ export function NarrativaBlock() {
   // servidor; sin backend, la resuelve el temporizador local (plantilla).
   async function generar() {
     dispatch({ type: 'SUBMIT_FREE_TEXT_START' });
-    if (!apiEnabled()) return; // el temporizador de AppContext resuelve en modo local
+    if (!apiEnabled() || !pendingId) return; // el temporizador de AppContext resuelve en modo local
     try {
-      const { formal } = await api.redactor({ raw: state.draft, field: q.field, fondo: fund.nombre });
+      const { formal } = await api.redactor({
+        raw: state.draft,
+        field: q.field,
+        fondo: fund.nombre,
+        fondoId: state.fondoId,
+        qid: pendingId,
+      });
       dispatch({ type: 'REDACTOR_RESOLVED', text: formal });
     } catch {
       // La respuesta del usuario nunca se pierde: queda en draft y ofrecemos salidas.
@@ -59,6 +67,12 @@ export function NarrativaBlock() {
         <AgentFinding color="var(--amber)">
           <span className="mono" style={{ fontSize: 10, color: 'var(--amber)' }}>Benchmark · adjudicados</span>
           <div>{q.benchmark}</div>
+        </AgentFinding>
+      )}
+      {officialContext && (
+        <AgentFinding color="var(--steel)">
+          <span className="mono" style={{ fontSize: 10, color: 'var(--steel)' }}>Bases oficiales · {fund.institucion}</span>
+          <div>{officialContext.texto}</div>
         </AgentFinding>
       )}
 
