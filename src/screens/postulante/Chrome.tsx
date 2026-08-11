@@ -23,46 +23,48 @@ export function Header() {
         <strong style={{ fontFamily: 'var(--font-serif)', fontSize: 17 }}>Copiloto de Postulación</strong>
         {state.demoMode && <Pill color="#fff" bg="var(--amber)">Modo demo</Pill>}
         <span className="mono" style={{ marginLeft: 'auto', fontSize: 12, color: savedColor }}>● {savedLabel}</span>
-        <div style={{ position: 'relative' }}>
-          <button
-            onClick={() => dispatch({ type: 'TOGGLE_STATE_PANEL' })}
-            aria-expanded={state.statePanelOpen}
-            style={{ border: '1px solid var(--rule)', background: '#fff', borderRadius: 8, padding: '6px 10px', fontSize: 12 }}
-          >
-            estados ▾
-          </button>
-          {state.statePanelOpen && (
-            <div
-              style={{ position: 'absolute', right: 0, top: 36, background: 'var(--ink)', color: '#fff', borderRadius: 12, padding: 14, width: 240, zIndex: 20, boxShadow: 'var(--shadow-widget)' }}
+        {import.meta.env.DEV && (
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => dispatch({ type: 'TOGGLE_STATE_PANEL' })}
+              aria-expanded={state.statePanelOpen}
+              style={{ border: '1px solid var(--rule)', background: '#fff', borderRadius: 8, padding: '6px 10px', fontSize: 12 }}
             >
-              <p style={{ fontSize: 11, color: '#9aa8bb', margin: '0 0 10px' }}>
-                Estados del sistema · para revisión de diseño, no es parte del producto
-              </p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                {SIM_TOGGLES.map((t) => {
-                  const active = state[t.key] as boolean;
-                  return (
-                    <button
-                      key={t.key}
-                      aria-pressed={active}
-                      onClick={() => dispatch({ type: 'TOGGLE_SIM', key: t.key })}
-                      style={{
-                        fontSize: 12,
-                        borderRadius: 999,
-                        padding: '4px 10px',
-                        background: active ? 'var(--amber)' : 'transparent',
-                        color: active ? '#fff' : '#9aa8bb',
-                        border: `1px solid ${active ? 'var(--amber)' : '#3b4a60'}`,
-                      }}
-                    >
-                      {t.label}
-                    </button>
-                  );
-                })}
+              estados ▾
+            </button>
+            {state.statePanelOpen && (
+              <div
+                style={{ position: 'absolute', right: 0, top: 36, background: 'var(--ink)', color: '#fff', borderRadius: 12, padding: 14, width: 240, zIndex: 20, boxShadow: 'var(--shadow-widget)' }}
+              >
+                <p style={{ fontSize: 11, color: '#9aa8bb', margin: '0 0 10px' }}>
+                  Estados del sistema · solo en desarrollo local, no es parte del producto
+                </p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {SIM_TOGGLES.map((t) => {
+                    const active = state[t.key] as boolean;
+                    return (
+                      <button
+                        key={t.key}
+                        aria-pressed={active}
+                        onClick={() => dispatch({ type: 'TOGGLE_SIM', key: t.key })}
+                        style={{
+                          fontSize: 12,
+                          borderRadius: 999,
+                          padding: '4px 10px',
+                          background: active ? 'var(--amber)' : 'transparent',
+                          color: active ? '#fff' : '#9aa8bb',
+                          border: `1px solid ${active ? 'var(--amber)' : '#3b4a60'}`,
+                        }}
+                      >
+                        {t.label}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
         <button onClick={() => dispatch({ type: 'RESTART' })} style={{ border: '1px solid var(--rule)', background: '#fff', borderRadius: 8, padding: '6px 10px', fontSize: 12 }}>
           Reiniciar
         </button>
