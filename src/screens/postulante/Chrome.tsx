@@ -19,8 +19,11 @@ export function Header() {
   const savedColor = state.simSaveError || state.simOffline ? 'var(--amber)' : '#8b9099';
   return (
     <header style={{ borderBottom: '1px solid var(--rule)', background: 'var(--paper)', position: 'sticky', top: 0, zIndex: 5 }}>
-      <div style={{ maxWidth: 1180, margin: '0 auto', padding: '12px 20px', display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
-        <strong style={{ fontFamily: 'var(--font-serif)', fontSize: 17 }}>Copiloto de Postulación</strong>
+      <div style={{ maxWidth: 1180, margin: '0 auto', padding: '14px 20px', display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span aria-hidden style={{ width: 9, height: 9, borderRadius: 999, background: 'var(--teal)' }} />
+          <strong style={{ fontFamily: 'var(--font-serif)', fontSize: 17, letterSpacing: '-0.01em' }}>Copiloto de Postulación</strong>
+        </div>
         {state.demoMode && <Pill color="#fff" bg="var(--amber)">Modo demo</Pill>}
         <span className="mono" style={{ marginLeft: 'auto', fontSize: 12, color: savedColor }}>● {savedLabel}</span>
         {import.meta.env.DEV && (

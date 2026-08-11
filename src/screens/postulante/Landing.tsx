@@ -6,6 +6,7 @@ import { CORPUS, AVG_MONTO, AVG_COFI } from '../../data/corpus';
 import { findFondo } from '../../domain/matchmaker';
 import { fmt } from '../../domain/format';
 import { Card, Button, Pill } from '../../ui/primitives';
+import { FundsCatalog } from './FundsCatalog';
 
 const EMAIL_RE = /.+@.+\..+/;
 
@@ -14,69 +15,105 @@ export function Landing() {
   const fund = FUNDS[state.fondoId];
 
   return (
-    <div style={{ maxWidth: 1180, margin: '0 auto', padding: '28px 20px 60px' }}>
-      <section style={{ display: 'grid', gap: 24, gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', alignItems: 'start' }}>
-        <div>
-          <Pill color="var(--amber)" bg="var(--bg-warning)">Fondos públicos chilenos · CORFO · Sercotec</Pill>
-          <h1 style={{ fontSize: 'clamp(28px, 4vw, 42px)', lineHeight: 1.1, margin: '14px 0' }}>
-            Tu postulación completa, calibrada contra proyectos que sí se adjudicaron.
-          </h1>
-          <p style={{ color: 'var(--slate)', fontSize: 16 }}>
-            Levantamos tu proyecto conversando, armamos el presupuesto con las reglas del instrumento aplicadas en vivo,
-            contrastamos tus cifras contra postulaciones ya adjudicadas, y un formulador revisa antes de entregarte el
-            expediente en PDF y Word.
-          </p>
-          <p className="mono" style={{ fontSize: 12, color: 'var(--teal)', marginTop: 8 }}>
-            Piloto gratuito · 20 cupos · Semilla Inicia y Fondo Crece
-          </p>
-          <div style={{ marginTop: 16 }}>
-            <Button variant="ink" onClick={() => dispatch({ type: 'LOAD_DEMO' })}>▶ Recorrer con el caso de ejemplo</Button>
-            <p style={{ fontSize: 12, color: '#8b9099', marginTop: 8 }}>
-              Precarga un proyecto completo y consistente para ver el expediente final sin llenar nada. Reversible desde
-              «Reiniciar».
+    <div style={{ position: 'relative', overflow: 'hidden' }}>
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          top: -160,
+          right: -120,
+          width: 480,
+          height: 480,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(31,111,99,0.09), transparent 70%)',
+          pointerEvents: 'none',
+        }}
+      />
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          top: 260,
+          left: -160,
+          width: 420,
+          height: 420,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(184,134,59,0.07), transparent 70%)',
+          pointerEvents: 'none',
+        }}
+      />
+
+      <div style={{ position: 'relative', maxWidth: 1180, margin: '0 auto', padding: '40px 20px 72px' }}>
+        <section style={{ display: 'grid', gap: 32, gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', alignItems: 'start' }}>
+          <div>
+            <Pill color="var(--amber)" bg="var(--bg-warning)">Fondos públicos chilenos · CORFO · Sercotec</Pill>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontWeight: 500, fontSize: 'clamp(30px, 4.2vw, 46px)', lineHeight: 1.08, letterSpacing: '-0.01em', margin: '18px 0 16px' }}>
+              Tu postulación completa, calibrada contra proyectos que sí se adjudicaron.
+            </h1>
+            <p style={{ color: 'var(--slate)', fontSize: 17, lineHeight: 1.55, maxWidth: 480 }}>
+              Levantamos tu proyecto conversando, armamos el presupuesto con las reglas del instrumento aplicadas en vivo,
+              contrastamos tus cifras contra postulaciones ya adjudicadas, y un formulador revisa antes de entregarte el
+              expediente en PDF y Word.
             </p>
-          </div>
-        </div>
-
-        <Card accent="var(--amber)">
-          <Pill color="var(--amber)" bg="var(--bg-warning)">Agente Matchmaker · gratis</Pill>
-          <Diagnostico />
-        </Card>
-      </section>
-
-      <section style={{ marginTop: 44 }}>
-        <h2 style={{ fontSize: 20 }}>Proyectos adjudicados de referencia</h2>
-        <p style={{ color: 'var(--slate)', fontSize: 14 }}>
-          Tenemos {CORPUS.length} postulaciones adjudicadas de referencia. Monto promedio {fmt(AVG_MONTO)}, con {AVG_COFI}% de
-          cofinanciamiento propio. Siempre anónimas.
-        </p>
-        <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', marginTop: 12 }}>
-          {CORPUS.map((c) => (
-            <Card key={c.nombre}>
-              <div className="mono" style={{ fontSize: 11, color: 'var(--slate)' }}>
-                {c.fondo} · {c.anio}
-              </div>
-              <div style={{ fontFamily: 'var(--font-serif)', fontSize: 18, margin: '4px 0' }}>{c.nombre}</div>
-              <div className="mono" style={{ fontSize: 12, color: 'var(--ink)' }}>
-                {fmt(c.monto)} · cofi {c.cofi}% · penetración {c.penetracion}%
-              </div>
-              <p style={{ fontSize: 13, color: 'var(--slate)', marginTop: 8 }}>{c.leccion}</p>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      {state.diagStep === 'result' && (
-        <div style={{ position: 'sticky', bottom: 16, marginTop: 24 }}>
-          <Card accent="var(--teal)" style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
-            <div style={{ flex: 1, minWidth: 240 }}>
-              <strong>Tu fondo: {fund.nombre} ({fund.institucion})</strong>
-              <p style={{ fontSize: 13, color: 'var(--slate)', margin: '4px 0 0' }}>{fund.motivo}</p>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', margin: '18px 0 4px' }}>
+              <span style={{ fontSize: 13, background: '#fff', border: '1px solid var(--rule)', borderRadius: 999, padding: '6px 12px' }}>
+                Piloto gratuito · 20 cupos
+              </span>
+              <span style={{ fontSize: 13, background: '#fff', border: '1px solid var(--rule)', borderRadius: 999, padding: '6px 12px' }}>
+                Semilla Inicia y Fondo Crece
+              </span>
             </div>
-            <Button variant="teal" onClick={() => dispatch({ type: 'GO_PILOTO' })}>Entrar al piloto →</Button>
+            <div style={{ marginTop: 20 }}>
+              <Button variant="ink" onClick={() => dispatch({ type: 'LOAD_DEMO' })}>▶ Recorrer con el caso de ejemplo</Button>
+              <p style={{ fontSize: 12, color: '#8b9099', marginTop: 8 }}>
+                Precarga un proyecto completo y consistente para ver el expediente final sin llenar nada. Reversible desde
+                «Reiniciar».
+              </p>
+            </div>
+          </div>
+
+          <Card accent="var(--amber)" style={{ position: 'relative', zIndex: 1 }}>
+            <Pill color="var(--amber)" bg="var(--bg-warning)">Agente Matchmaker · gratis</Pill>
+            <Diagnostico />
           </Card>
-        </div>
-      )}
+        </section>
+
+        <FundsCatalog />
+
+        <section style={{ marginTop: 56 }}>
+          <h2 style={{ fontSize: 22, margin: '0 0 4px' }}>Proyectos adjudicados de referencia</h2>
+          <p style={{ color: 'var(--slate)', fontSize: 14, marginBottom: 16 }}>
+            Tenemos {CORPUS.length} postulaciones adjudicadas de referencia. Monto promedio {fmt(AVG_MONTO)}, con {AVG_COFI}%
+            de cofinanciamiento propio. Siempre anónimas.
+          </p>
+          <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
+            {CORPUS.map((c) => (
+              <Card key={c.nombre}>
+                <div className="mono" style={{ fontSize: 11, color: 'var(--slate)' }}>
+                  {c.fondo} · {c.anio}
+                </div>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: 18, margin: '4px 0' }}>{c.nombre}</div>
+                <div className="mono" style={{ fontSize: 12, color: 'var(--ink)' }}>
+                  {fmt(c.monto)} · cofi {c.cofi}% · penetración {c.penetracion}%
+                </div>
+                <p style={{ fontSize: 13, color: 'var(--slate)', marginTop: 8 }}>{c.leccion}</p>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        {state.diagStep === 'result' && (
+          <div style={{ position: 'sticky', bottom: 16, marginTop: 24 }}>
+            <Card accent="var(--teal)" style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+              <div style={{ flex: 1, minWidth: 240 }}>
+                <strong>Tu fondo: {fund.nombre} ({fund.institucion})</strong>
+                <p style={{ fontSize: 13, color: 'var(--slate)', margin: '4px 0 0' }}>{fund.motivo}</p>
+              </div>
+              <Button variant="teal" onClick={() => dispatch({ type: 'GO_PILOTO' })}>Entrar al piloto →</Button>
+            </Card>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
