@@ -52,7 +52,7 @@ async function req<T>(path: string, opts: RequestInit = {}): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     ...opts,
     headers: {
-      'Content-Type': 'application/json',
+      ...(opts.body ? { 'Content-Type': 'application/json' } : {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...opts.headers,
     },
@@ -99,7 +99,7 @@ async function reqFormulador<T>(path: string, opts: RequestInit = {}): Promise<T
   const res = await fetch(`${API_URL}${path}`, {
     ...opts,
     headers: {
-      'Content-Type': 'application/json',
+      ...(opts.body ? { 'Content-Type': 'application/json' } : {}),
       ...(email ? { 'x-formulador-email': email } : {}),
       ...opts.headers,
     },

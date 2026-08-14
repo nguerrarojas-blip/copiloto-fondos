@@ -179,8 +179,12 @@ function PanelFormuladorReal() {
       await formuladorApi.tomar(id);
       await abrir(id);
       await refreshKpis();
-    } catch {
-      setActionError('Alguien más ya tomó ese expediente.');
+    } catch (e) {
+      setActionError(
+        e instanceof ApiError && e.status === 409
+          ? 'Alguien más ya tomó ese expediente.'
+          : 'No se pudo tomar el expediente. Intenta de nuevo.',
+      );
       formuladorApi.bandeja(tab).then((r) => setRows(r.expedientes));
     }
   }
