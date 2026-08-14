@@ -33,7 +33,7 @@ export async function pilotoRoutes(app: FastifyInstance): Promise<void> {
     const postulacionId = rows[0].id;
 
     const token = await issueToken(postulacionId, pilotoEmail);
-    const link = `${env.APP_BASE_URL}/?token=${token}`;
+    const link = `${env.APP_BASE_URL}/app/?token=${token}`;
     await sendTransactional({ tipo: 'enlace_acceso', postulacionId, to: pilotoEmail, link });
 
     // El token viaja por correo, no en la respuesta. En dev sin Resend, queda en el log del servidor.
@@ -54,7 +54,7 @@ export async function pilotoRoutes(app: FastifyInstance): Promise<void> {
 
     const postulacionId = rows[0].id;
     const token = await issueToken(postulacionId, parsed.data.email);
-    const link = `${env.APP_BASE_URL}/?token=${token}`;
+    const link = `${env.APP_BASE_URL}/app/?token=${token}`;
     await sendTransactional({ tipo: 'enlace_acceso', postulacionId, to: parsed.data.email, link });
     return reply.send({ ok: true });
   });

@@ -1,23 +1,56 @@
 /** Persistencia real de la postulación en servidor (reemplaza el localStorage del
  * prototipo). El estado se guarda íntegro en jsonb y el servidor recalcula los
- * derivados con el mismo motor de reglas del front. */
+ * derivados con el mismo motor de reglas del front.
+ *
+ * `lev_stage` y los comentarios del formulador NUNCA se confían del cliente más
+ * allá de lo que el propio postulante puede accionar (enviar a revisión). Que un
+ * expediente quede "devuelto" o "done" lo decide únicamente el panel del
+ * formulador (server/src/routes/formulador.ts) — si no, el postulante podría
+ * autoaprobarse mandando ese valor en el PUT. */
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { query } from '../db.ts';
 import { requirePostulante } from '../auth.ts';
 import { normalizeState, deriveFields, validRut, type AppState } from '../rules.ts';
+import { sendTransactional } from '../email.ts';
+import { issueToken } from '../tokens.ts';
+import { env } from '../env.ts';
+import type { Comentario } from '../../../src/state/types.ts';
+
+// Estos son los únicos valores de lev_stage que el propio postulante puede fijar.
+// 'devuelto' y 'done' quedan reservados al panel del formulador.
+const CLIENT_LEV_STAGES = ['work', 'verifying', 'scored', 'revision'];
 
 export async function postulacionRoutes(app: FastifyInstance): Promise<void> {
-  // Estado actual de la postulación (para retomar la sesión).
+  // Estado actual de la postulación (para retomar la sesión). lev_stage y
+  // comentarios se devuelven desde su fuente de verdad en el servidor, no desde
+  // lo último que el cliente guardó.
   app.get('/api/postulacion', { preHandler: requirePostulante }, async (req, reply) => {
-    const rows = await query<{ state: AppState; estado_label: string; hard_issues: number; progress_pct: number }>(
-      `SELECT state, estado_label, hard_issues, progress_pct FROM postulacion WHERE id = $1`,
+    const rows = await query<{
+      state: AppState;
+      lev_stage: string;
+      estado_label: string;
+      hard_issues: number;
+      progress_pct: number;
+    }>(
+      `SELECT state, lev_stage, estado_label, hard_issues, progress_pct FROM postulacion WHERE id = $1`,
       [req.postulacionId],
     );
     if (!rows.length) return reply.code(404).send({ error: 'no_existe' });
     const row = rows[0];
+
+    const comentarioRows = await query<Comentario & { created_at: string }>(
+      `SELECT id, seccion, block, texto, respuesta, resuelto, created_at
+       FROM comentario WHERE postulacion_id = $1 ORDER BY created_at ASC`,
+      [req.postulacionId],
+    );
+
     return reply.send({
-      state: row.state,
+      state: {
+        ...row.state,
+        levStage: row.lev_stage,
+        comentarios: comentarioRows.length ? comentarioRows : row.state.comentarios,
+      },
       derived: { estadoLabel: row.estado_label, hardIssues: row.hard_issues, progressPct: row.progress_pct },
     });
   });
@@ -31,6 +64,14 @@ export async function postulacionRoutes(app: FastifyInstance): Promise<void> {
 
     const state = normalizeState(parsed.data.state as Partial<AppState>);
     const d = deriveFields(state);
+
+    const current = await query<{ lev_stage: string; piloto_email: string }>(
+      `SELECT lev_stage, piloto_email FROM postulacion WHERE id = $1`,
+      [req.postulacionId],
+    );
+    if (!current.length) return reply.code(404).send({ error: 'no_existe' });
+    const prevLevStage = current[0].lev_stage;
+    const nextLevStage = CLIENT_LEV_STAGES.includes(state.levStage) ? state.levStage : prevLevStage;
 
     // Upsert del perfil de empresa a partir de la identidad (si el RUT es válido).
     let empresaId: string | null = null;
@@ -57,11 +98,29 @@ export async function postulacionRoutes(app: FastifyInstance): Promise<void> {
          empresa_id = COALESCE($11, empresa_id)
        WHERE id = $1`,
       [
-        req.postulacionId, state, state.screen, state.block, state.levStage,
+        req.postulacionId, state, state.screen, state.block, nextLevStage,
         d.estadoLabel, d.hardIssues, d.progressPct,
         state.consent, state.reeditado, empresaId,
       ],
     );
-    return reply.send({ derived: d });
+
+    // Confirmación de recepción, una sola vez, en el momento exacto en que el
+    // expediente entra a revisión.
+    if (prevLevStage !== 'revision' && nextLevStage === 'revision') {
+      const token = await issueToken(req.postulacionId!, current[0].piloto_email);
+      const link = `${env.APP_BASE_URL}/app/?token=${token}`;
+      await sendTransactional({ tipo: 'en_revision', postulacionId: req.postulacionId!, to: current[0].piloto_email, link });
+    }
+
+    // Las respuestas del postulante a comentarios ya existentes se reflejan en la
+    // tabla real (nunca su texto, sección o bloque: esos son del formulador).
+    for (const c of state.comentarios as Comentario[]) {
+      await query(
+        `UPDATE comentario SET respuesta = $1, resuelto = $2 WHERE id = $3 AND postulacion_id = $4`,
+        [c.respuesta, c.resuelto, c.id, req.postulacionId],
+      );
+    }
+
+    return reply.send({ derived: d, levStage: nextLevStage });
   });
 }

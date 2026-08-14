@@ -3,7 +3,7 @@
  * Porta las transiciones de estado de la clase Component de `Copiloto Final.dc.html`
  * (diagSayYes, pickEtapa, submitFreeText, runVerification, etc.) a acciones puras.
  */
-import type { AppState, Block, Answer, BudgetRow, Comentario } from './types';
+import type { AppState, Block, Answer, BudgetRow, Comentario, LevStage } from './types';
 import type { FondoId } from '../data/funds';
 import { FUNDS, narrativeIds } from '../data/funds';
 import { INITIAL } from './initialState';
@@ -15,6 +15,7 @@ import { formalize } from '../domain/format';
 export type Action =
   // Navegación / global
   | { type: 'HYDRATE_SERVER'; state: Partial<AppState>; showResume: boolean }
+  | { type: 'SYNC_ESTADO'; levStage: LevStage; comentarios: Comentario[] }
   | { type: 'RESTART' }
   | { type: 'RESUME_CONTINUE' }
   | { type: 'RESEND_LINK' }
@@ -95,6 +96,10 @@ export function reducer(s: AppState, a: Action): AppState {
   switch (a.type) {
     case 'HYDRATE_SERVER':
       return { ...INITIAL, ...a.state, showResume: a.showResume, statePanelOpen: false };
+    case 'SYNC_ESTADO':
+      // Actualiza solo lo que decide el formulador (nunca pisa lo que el
+      // postulante está editando en pantalla).
+      return { ...s, levStage: a.levStage, comentarios: a.comentarios };
     case 'RESTART':
       return { ...INITIAL, showResume: false };
     case 'RESUME_CONTINUE':

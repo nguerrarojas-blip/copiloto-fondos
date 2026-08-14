@@ -1,9 +1,13 @@
 /** Bloque Verificación: corre los tres agentes (QA, Coherencia, Benchmark),
  * muestra el ESTADO del expediente (dos valores, nunca un puntaje), y el ciclo de
- * revisión del formulador (enviar → devuelto con comentarios → aprobado). */
+ * revisión del formulador (enviar → devuelto con comentarios → aprobado). Con
+ * backend conectado, "devuelto" y "aprobado" los decide el formulador real — el
+ * postulante solo puede pedir una actualización de estado, nunca autoaprobarse. */
+import { useState } from 'react';
 import { useApp } from '../../../state/AppContext';
 import { analyzeExpediente } from '../../../domain/expediente';
 import { Card, Button, Pill, AgentFinding } from '../../../ui/primitives';
+import { api, apiEnabled } from '../../../api/client';
 
 export function VerificacionBlock() {
   const { state, dispatch } = useApp();
@@ -58,13 +62,19 @@ export function VerificacionBlock() {
 
       {stage === 'revision' && (
         <div style={{ marginTop: 14, background: 'var(--bg-secondary)', borderRadius: 10, padding: 14 }}>
-          <strong style={{ fontSize: 14 }}>En revisión de Marcela, formuladora</strong>
+          <strong style={{ fontSize: 14 }}>En revisión de un formulador</strong>
           <p style={{ fontSize: 13, color: 'var(--slate)' }}>
-            {state.reeditado ? 'Revisó tus correcciones.' : 'Los agentes hicieron el trabajo pesado; ella pone el criterio.'} Te escribe apenas termine.
+            {state.reeditado ? 'Revisó tus correcciones.' : 'Los agentes hicieron el trabajo pesado; el formulador pone el criterio.'} Te avisamos por correo apenas termine.
           </p>
           <div style={{ marginTop: 8 }}>
-            <Button onClick={() => dispatch({ type: 'SIMULATE_DEVUELTO' })}>Simular: devuelto con comentarios</Button>{' '}
-            <Button variant="teal" onClick={() => dispatch({ type: 'COMPLETE_REVIEW' })}>Simular: aprobado</Button>
+            {apiEnabled() ? (
+              <ActualizarEstado />
+            ) : (
+              <>
+                <Button onClick={() => dispatch({ type: 'SIMULATE_DEVUELTO' })}>Simular: devuelto con comentarios</Button>{' '}
+                <Button variant="teal" onClick={() => dispatch({ type: 'COMPLETE_REVIEW' })}>Simular: aprobado</Button>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -82,6 +92,30 @@ export function VerificacionBlock() {
         </div>
       )}
     </Card>
+  );
+}
+
+function ActualizarEstado() {
+  const { dispatch } = useApp();
+  const [loading, setLoading] = useState(false);
+  const [checked, setChecked] = useState(false);
+
+  async function actualizar() {
+    setLoading(true);
+    try {
+      const { state: server } = await api.getPostulacion();
+      dispatch({ type: 'SYNC_ESTADO', levStage: server.levStage, comentarios: server.comentarios });
+      setChecked(true);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <>
+      <Button onClick={actualizar} disabled={loading}>{loading ? 'Revisando…' : 'Actualizar estado'}</Button>
+      {checked && <p style={{ fontSize: 12, color: 'var(--slate)', marginTop: 6 }}>Sigue en revisión — todavía no hay novedades.</p>}
+    </>
   );
 }
 
