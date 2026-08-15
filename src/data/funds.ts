@@ -94,13 +94,17 @@ export const FUNDS: Record<FondoId, Fund> = {
       'Gastos de administración',
     ],
     sections: [
-      { key: 'negocio', title: 'Descripción del negocio', kind: 'narrativa', qs: ['q1', 'q2'] },
       { key: 'antecedentes', title: 'Antecedentes generales', kind: 'identidad' },
       { key: 'admisibilidad', title: 'Admisibilidad', kind: 'admisibilidad' },
-      { key: 'mejora', title: 'Mejora productiva', kind: 'narrativa', qs: ['c1', 'q3', 'q5'] },
       {
-        key: 'inversion',
-        title: 'Plan de inversión',
+        key: 'modelo',
+        title: 'Modelo de negocio (Canvas)',
+        kind: 'narrativa',
+        qs: ['canvas_clientes', 'canvas_oferta', 'canvas_canales', 'canvas_relacion', 'canvas_recursos', 'canvas_actividades', 'canvas_alianzas'],
+      },
+      {
+        key: 'finanzas',
+        title: 'Ingresos y estructura de costos',
         kind: 'narrativa+presupuesto',
         qs: ['q10'],
       },
@@ -127,13 +131,17 @@ export const FUNDS: Record<FondoId, Fund> = {
       'Gastos de administración',
     ],
     sections: [
-      { key: 'negocio', title: 'Descripción del emprendimiento', kind: 'narrativa', qs: ['q1', 'q2'] },
       { key: 'antecedentes', title: 'Antecedentes generales', kind: 'identidad' },
       { key: 'admisibilidad', title: 'Admisibilidad', kind: 'admisibilidad' },
-      { key: 'proyecto', title: 'Proyecto a financiar', kind: 'narrativa', qs: ['c1', 'q3'] },
       {
-        key: 'inversion',
-        title: 'Plan de inversión',
+        key: 'modelo',
+        title: 'Modelo de negocio (Canvas)',
+        kind: 'narrativa',
+        qs: ['canvas_clientes', 'canvas_oferta', 'canvas_canales', 'canvas_relacion', 'canvas_recursos', 'canvas_actividades', 'canvas_alianzas', 'canvas_sustentabilidad'],
+      },
+      {
+        key: 'finanzas',
+        title: 'Ingresos y estructura de costos',
         kind: 'narrativa+presupuesto',
         qs: ['q10'],
       },

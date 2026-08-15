@@ -75,62 +75,115 @@ const SEMILLA_INICIA: Record<string, OfficialContext> = {
 };
 
 /**
- * Capital Abeja Emprende (Sercotec): el formulario de proyecto de negocio usa
- * la metodología Canvas (Osterwalder), con ámbitos y ponderaciones definidos
- * en las bases. Se cita la estructura oficial, no una convocatoria regional
- * específica (los montos y plazos varían por región; la metodología no).
- * Fuente: Bases de convocatoria Capital Abeja Emprende (Sercotec),
- * sección 2.3.4 "Formulario Proyecto de Negocio (CANVAS)".
+ * Capital Abeja Emprende (Sercotec): el Formulario Proyecto de Negocio (Canvas)
+ * tiene 10 ámbitos evaluados con pregunta oficial explícita — los 9 del Canvas
+ * más "Sustentabilidad", propio de este instrumento. Se cita cada uno con la
+ * pregunta literal de la pauta de evaluación; "Costos" no tiene cita propia
+ * porque ya lo cubre el cuadro de presupuesto real de la app (categoría,
+ * detalle, monto, aporte), no un campo narrativo separado.
+ * Fuente: Bases de Convocatoria Capital Abeja Emprende 2025 (Metropolitana,
+ * Sercotec), Anexo N°6 "Criterios de Evaluación Técnica", tabla "Formulario
+ * Modelo de Proyecto de Negocio (60%)".
  */
 const CAPITAL_ABEJA: Record<string, OfficialContext> = {
-  q1: {
+  canvas_clientes: {
     texto:
-      'El formulario Canvas pide describir el elemento diferenciador u oferta de valor: "características que destaquen y diferencien tu proyecto por sobre los demás".',
-    fuente: 'Bases Capital Abeja Emprende (Sercotec), Formulario Proyecto de Negocio (CANVAS)',
+      'Ámbito "Clientes": "¿Quiénes son los principales clientes? ¿A qué tipo de clientes apunta nuestro negocio?" Se evalúa mejor si se describen las características de los clientes con detalle (edad, género, ubicación geográfica, poder adquisitivo, frecuencia de compra), no solo se les nombra.',
+    fuente: 'Bases Capital Abeja Emprende 2025 (Sercotec), Anexo N°6, ámbito "1. Clientes"',
   },
-  c1: {
+  canvas_oferta: {
     texto:
-      'El ámbito "Clientes" del Canvas pide identificar a qué clientes apunta la propuesta y por qué te preferirían por sobre otras alternativas — se evalúa explícitamente el nivel de detalle con que se describen las características de esos clientes.',
-    fuente: 'Bases Capital Abeja Emprende (Sercotec), Formulario Proyecto de Negocio (CANVAS)',
+      'Ámbito "Elemento diferenciador u Oferta de Valor": "¿Por qué los clientes deberían preferirme por sobre los demás? ¿Por qué los clientes deberían preferir mi producto/servicio por sobre los demás?"',
+    fuente: 'Bases Capital Abeja Emprende 2025 (Sercotec), Anexo N°6, ámbito "2. Elemento diferenciador/Oferta de Valor"',
   },
-  q3: {
+  canvas_canales: {
     texto:
-      'El ámbito "Ingresos" del Canvas pide describir qué ingresos recibirá el negocio y a través de qué medios de pago los percibirá.',
-    fuente: 'Bases Capital Abeja Emprende (Sercotec), Formulario Proyecto de Negocio (CANVAS)',
+      'Ámbito "Medios de distribución/atención": "¿A través de qué medios realizo las ventas a mis clientes? ¿Cuáles son los medios, para dar a conocer mi producto/servicio, que prefieren mi/s tipo/s de clientes? ¿Cuáles son los medios con los que obtendría mayor venta en mi modelo de negocio?" Se evalúa mejor si se justifica por qué esos medios son los más adecuados para cada tipo de cliente.',
+    fuente: 'Bases Capital Abeja Emprende 2025 (Sercotec), Anexo N°6, ámbito "3. Medios de distribución/atención"',
+  },
+  canvas_relacion: {
+    texto:
+      'Ámbito "Relación con los clientes": "¿Qué relación tiene o espera tener con cada tipo de cliente descrito? ¿Alguno de los medios por los cuales busca relacionarse con el cliente, tiene algún costo asociado?"',
+    fuente: 'Bases Capital Abeja Emprende 2025 (Sercotec), Anexo N°6, ámbito "4. Relación con los clientes"',
+  },
+  q10: {
+    texto:
+      'Ámbito "Ingresos": "¿Por cuál tipo de producto/servicio estarían dispuestos a pagar más nuestros clientes? ¿Por cuál tipo de producto/servicio pagan actualmente los clientes? ¿Qué tipo de medio de pago prefieren utilizar mis clientes?"',
+    fuente: 'Bases Capital Abeja Emprende 2025 (Sercotec), Anexo N°6, ámbito "5. Ingresos"',
+  },
+  canvas_recursos: {
+    texto:
+      'Ámbito "Elementos clave": "¿Qué elementos se debe adquirir para generar mi producto/servicio y entregue a los diferentes tipos de clientes?" Se evalúa mejor si se describen al menos dos elementos clave, no solo se mencionan.',
+    fuente: 'Bases Capital Abeja Emprende 2025 (Sercotec), Anexo N°6, ámbito "6. Elementos clave"',
+  },
+  canvas_actividades: {
+    texto:
+      'Ámbito "Acciones/actividades clave": "¿Qué acciones se deben realizar para que mi producto/servicio se entregue a los diferentes tipos de clientes?"',
+    fuente: 'Bases Capital Abeja Emprende 2025 (Sercotec), Anexo N°6, ámbito "7. Acciones/actividades clave"',
+  },
+  canvas_alianzas: {
+    texto:
+      'Ámbito "Alianzas clave": "¿Cuáles son las alianzas realizadas o a realizar para mejorar la satisfacción de mis clientes?"',
+    fuente: 'Bases Capital Abeja Emprende 2025 (Sercotec), Anexo N°6, ámbito "9. Alianzas clave"',
+  },
+  canvas_sustentabilidad: {
+    texto:
+      'Ámbito "Sustentabilidad": "¿Qué acciones puedo implementar en mi negocio, desde el punto de vista de la eficiencia energética, energías renovables y economía circular, de manera de hacer mi producto o servicio más sustentable? ¿Tenía ya incorporada alguna de estas acciones en el proceso de mi producto o servicio?"',
+    fuente: 'Bases Capital Abeja Emprende 2025 (Sercotec), Anexo N°6, ámbito "10. Sustentabilidad"',
   },
 };
 
 /**
- * Fondo Crece (Sercotec): el Formulario de Proyecto de Negocio también usa la
- * metodología Canvas, con 9 ámbitos evaluados según una pauta oficial que trae
- * la pregunta exacta de cada uno. Solo se citan los tres ámbitos que
- * corresponden de forma directa a un campo narrativo ya existente en la app
- * (Beneficiarios → Clientes, Descripción del producto → Oferta de Valor,
- * Modelo de ingresos → Ingresos). Los ámbitos sin equivalente en la app hoy
- * (Canales de distribución, Relación con clientes, Recursos/Actividades
- * clave, Costos, Alianzas clave) y los campos de la app sin pregunta oficial
- * explícita en este instrumento (Resumen, Problema u oportunidad, Mejora
- * productiva a financiar) se dejan sin contexto — mejor sin cita que una
- * forzada o que no corresponda.
+ * Fondo Crece (Sercotec): el Formulario Proyecto de Negocio también usa
+ * Canvas, con 9 ámbitos evaluados según pauta oficial. La redacción de cada
+ * pregunta difiere de la de Capital Abeja aunque el ámbito sea el mismo
+ * concepto, así que se cita el texto propio de esta convocatoria y no el de
+ * Abeja. "Costos" no tiene cita propia por la misma razón que en Abeja: ya
+ * lo cubre el cuadro de presupuesto real de la app.
  * Fuente: Bases de Convocatoria Crece – Fondo de Desarrollo de Negocios 2025
  * (Multisectorial Urbano, Sercotec), Anexo N°5 "Criterios de Evaluación
  * Técnica", tabla "Proyecto de Negocio (60%)".
  */
 const FONDO_CRECE: Record<string, OfficialContext> = {
-  q2: {
+  canvas_clientes: {
     texto:
-      'Ámbito "Clientes" del Canvas: "¿Quiénes son los clientes a los cuales les estamos entregando valor? ¿Cuáles son los segmentos más importantes de clientes que apunta nuestro negocio?" Se evalúa mejor si los segmentos se describen con más de un tipo de variable de segmentación (geográfica, demográfica, psicográfica o conductual).',
+      'Ámbito "Clientes": "¿Quiénes son los clientes a los cuales les estamos entregando valor? ¿Cuáles son los segmentos más importantes de clientes que apunta nuestro negocio?" Se evalúa mejor si los segmentos se describen con más de un tipo de variable de segmentación (geográfica, demográfica, psicográfica o conductual).',
     fuente: 'Bases de Convocatoria Crece 2025 (Sercotec), Anexo N°5, ámbito "1. Clientes"',
   },
-  q5: {
+  canvas_oferta: {
     texto:
-      'Ámbito "Oferta de Valor/Elemento diferenciador" del Canvas: "¿Por qué deberían preferirme el segmento de clientes que apunta mi Proyecto de Negocio, y no quedarse con la competencia?" Se evalúa mejor si la propuesta especifica las diferencias concretas con la competencia, no solo que "resuelve el problema".',
+      'Ámbito "Oferta de Valor/Elemento diferenciador": "¿Por qué deberían preferirme el segmento de clientes que apunta mi Proyecto de Negocio, y no quedarse con la competencia?" Se evalúa mejor si la propuesta especifica las diferencias concretas con la competencia, no solo que "resuelve el problema".',
     fuente: 'Bases de Convocatoria Crece 2025 (Sercotec), Anexo N°5, ámbito "2. Oferta de Valor/Elemento diferenciador"',
+  },
+  canvas_canales: {
+    texto:
+      'Ámbito "Canales de distribución": "¿A través de qué canales quiero llegar a mis clientes? ¿Cuáles son los canales que funcionan mejor de acuerdo con mi segmento de clientes? ¿Cuáles son los canales más rentables de mi modelo de negocio?"',
+    fuente: 'Bases de Convocatoria Crece 2025 (Sercotec), Anexo N°5, ámbito "3. Canales de distribución"',
+  },
+  canvas_relacion: {
+    texto:
+      'Ámbito "Relación con los clientes": "¿Qué relación espera tener con cada segmento de clientes descrito? ¿Cuál es el costo de establecer cada una de las formas de relacionarse con cada segmento?"',
+    fuente: 'Bases de Convocatoria Crece 2025 (Sercotec), Anexo N°5, ámbito "4. Relación con los clientes"',
   },
   q10: {
     texto:
-      'Ámbito "Ingresos" del Canvas: "¿Por qué están dispuestos a pagar nuestros diferentes segmentos de clientes? ¿Por qué pagan actualmente nuestros segmentos potenciales de clientes? ¿Por qué medio prefiere pagar cada segmento de clientes?" Se evalúa describir cada ingreso del negocio y a través de qué medio se percibirá.',
+      'Ámbito "Ingresos": "¿Por qué están dispuestos a pagar nuestros diferentes segmentos de clientes? ¿Por qué pagan actualmente nuestros segmentos potenciales de clientes? ¿Por qué medio prefiere pagar cada segmento de clientes?" Se evalúa describir cada ingreso del negocio y a través de qué medio se percibirá.',
     fuente: 'Bases de Convocatoria Crece 2025 (Sercotec), Anexo N°5, ámbito "5. Ingresos"',
+  },
+  canvas_recursos: {
+    texto:
+      'Ámbito "Recursos claves": "¿Qué recursos clave se deben gestionar para que nuestra oferta de valor llegue a los diferentes segmentos de clientes definidos en el modelo de negocios?" Se evalúa mejor si se describen al menos tres recursos clave.',
+    fuente: 'Bases de Convocatoria Crece 2025 (Sercotec), Anexo N°5, ámbito "6. Recursos claves"',
+  },
+  canvas_actividades: {
+    texto:
+      'Ámbito "Actividades claves": "¿Qué actividades clave se deben desarrollar para que nuestra oferta de valor llegue a los diferentes segmentos de clientes definidos en el modelo de negocios?"',
+    fuente: 'Bases de Convocatoria Crece 2025 (Sercotec), Anexo N°5, ámbito "7. Actividades claves"',
+  },
+  canvas_alianzas: {
+    texto:
+      'Ámbito "Alianzas claves": "Identifique las alianzas claves que lo ayudan a mejorar la satisfacción de sus actuales y/o potenciales clientes a través de la oferta de valor de su proyecto de negocio (proveedores, empresas afines, entre otros)."',
+    fuente: 'Bases de Convocatoria Crece 2025 (Sercotec), Anexo N°5, ámbito "9. Alianzas claves"',
   },
 };
 
