@@ -100,12 +100,44 @@ const CAPITAL_ABEJA: Record<string, OfficialContext> = {
   },
 };
 
+/**
+ * Fondo Crece (Sercotec): el Formulario de Proyecto de Negocio también usa la
+ * metodología Canvas, con 9 ámbitos evaluados según una pauta oficial que trae
+ * la pregunta exacta de cada uno. Solo se citan los tres ámbitos que
+ * corresponden de forma directa a un campo narrativo ya existente en la app
+ * (Beneficiarios → Clientes, Descripción del producto → Oferta de Valor,
+ * Modelo de ingresos → Ingresos). Los ámbitos sin equivalente en la app hoy
+ * (Canales de distribución, Relación con clientes, Recursos/Actividades
+ * clave, Costos, Alianzas clave) y los campos de la app sin pregunta oficial
+ * explícita en este instrumento (Resumen, Problema u oportunidad, Mejora
+ * productiva a financiar) se dejan sin contexto — mejor sin cita que una
+ * forzada o que no corresponda.
+ * Fuente: Bases de Convocatoria Crece – Fondo de Desarrollo de Negocios 2025
+ * (Multisectorial Urbano, Sercotec), Anexo N°5 "Criterios de Evaluación
+ * Técnica", tabla "Proyecto de Negocio (60%)".
+ */
+const FONDO_CRECE: Record<string, OfficialContext> = {
+  q2: {
+    texto:
+      'Ámbito "Clientes" del Canvas: "¿Quiénes son los clientes a los cuales les estamos entregando valor? ¿Cuáles son los segmentos más importantes de clientes que apunta nuestro negocio?" Se evalúa mejor si los segmentos se describen con más de un tipo de variable de segmentación (geográfica, demográfica, psicográfica o conductual).',
+    fuente: 'Bases de Convocatoria Crece 2025 (Sercotec), Anexo N°5, ámbito "1. Clientes"',
+  },
+  q5: {
+    texto:
+      'Ámbito "Oferta de Valor/Elemento diferenciador" del Canvas: "¿Por qué deberían preferirme el segmento de clientes que apunta mi Proyecto de Negocio, y no quedarse con la competencia?" Se evalúa mejor si la propuesta especifica las diferencias concretas con la competencia, no solo que "resuelve el problema".',
+    fuente: 'Bases de Convocatoria Crece 2025 (Sercotec), Anexo N°5, ámbito "2. Oferta de Valor/Elemento diferenciador"',
+  },
+  q10: {
+    texto:
+      'Ámbito "Ingresos" del Canvas: "¿Por qué están dispuestos a pagar nuestros diferentes segmentos de clientes? ¿Por qué pagan actualmente nuestros segmentos potenciales de clientes? ¿Por qué medio prefiere pagar cada segmento de clientes?" Se evalúa describir cada ingreso del negocio y a través de qué medio se percibirá.',
+    fuente: 'Bases de Convocatoria Crece 2025 (Sercotec), Anexo N°5, ámbito "5. Ingresos"',
+  },
+};
+
 const BY_FONDO: Partial<Record<FondoId, Record<string, OfficialContext>>> = {
   'semilla-inicia': SEMILLA_INICIA,
   'capital-abeja': CAPITAL_ABEJA,
-  // Fondo Crece (Sercotec): no se ha verificado todavía el texto oficial
-  // campo por campo. No se inventa contexto "oficial" sin confirmarlo contra
-  // las bases reales — mejor sin contexto adicional que uno fabricado.
+  'fondo-crece': FONDO_CRECE,
 };
 
 /** Instrucción oficial para un campo, si ya fue verificada contra la fuente pública. */
